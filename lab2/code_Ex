@@ -1,0 +1,47 @@
+def solve_circuit_potentials(graph):
+    n=len(graph.nodes)
+    G=np.zeros((n-1,n-1))
+    grounded=0
+    m=0
+    for e in graph.edges:
+        if graph[e[0]][e[1]]['sem']!=0:
+            m+=1
+    c=0
+    for u,v in graph.edges:    
+        if graph[u][v]['resistance']!=0:
+            if u!=0:
+                G[u-1][u-1]+=1/graph[u][v]['resistance']
+            if v!=0:
+                G[v-1][v-1]+=1/graph[u][v]['resistance']
+            if v!=0 and u!=0:
+                G[u-1][v-1]=-1/graph[u][v]['resistance']
+                G[v-1][u-1]=-1/graph[u][v]['resistance']
+    B=np.zeros((n-1,m))
+    bat_num=0
+    E=np.zeros((m,1))
+    C_edges={}
+    for i,e in enumerate(graph.edges):
+        if graph[e[0]][e[1]]['sem']!=0 and (e[0]!=0 or e[1]!=0):
+            if e[0]!=0:
+                B[e[0]-1][bat_num]=-1
+            if e[1]!=0:
+                B[e[1]-1][bat_num]=1
+            E[bat_num]=graph[e[0]][e[1]]['sem']
+            C_edges[bat_num]=e
+            bat_num+=1
+    C=B.T
+    D=np.zeros((m,m))
+    A=np.block([[G,B],[C,D]])
+    I=np.zeros((n-1,1))
+    Z=np.block([[I],[E]])
+    V=np.linalg.solve(A,Z)
+    G1=nx.DiGraph()
+    Voltage=np.append(np.array([0]),np.array(V[0:n-1]))
+    print(Voltage)
+    for e in graph.edges:
+        print(e,(Voltage[e[0]]-Voltage[e[1]]),graph[e[0]][e[1]]['resistance'])
+    Current=np.array(V[n-1:])
+    for i in range(len(Current)):
+        print(Current[i],C_edges[i])
+G=read_graph_from_file('test3.txt')
+solve_circuit_potentials(G)

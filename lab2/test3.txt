@@ -1,0 +1,5 @@
+0 1 {'resistance': 2.0,'sem': 3}
+1 2 {'resistance': 1,'sem': 0}
+2 3 {'resistance': 4.0,'sem': 0}
+0 3 {'resistance': 1,'sem': 0}
+0 2 {'resistance': 8,'sem': 0}
